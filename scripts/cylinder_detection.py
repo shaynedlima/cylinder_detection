@@ -2,7 +2,7 @@
 import os, sys
 import numpy as np
 import cv2
-from PIL import Image
+import matplotlib.image as mpimg
 
 
 def find_circles(img, cimg, minDist, param1, param2, min_rad, max_rad):
@@ -28,27 +28,34 @@ def find_circles(img, cimg, minDist, param1, param2, min_rad, max_rad):
 def callback():
 
     # Read image
-    img = cv2.imread('/home/ecse-robotics-lab/Downloads/circles_rectangles.jpg',0)
+    img = mpimg.imread(r'/home/ecse-robotics-lab/cylinder_images/1.jpg',0)
 
-    # Blur image
-    img = cv2.medianBlur(img,5)
+    
 
     # Convert to HSV
-    cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+    cimg = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-    # Red range
-    #lower_red = np.array([30,150,50])
-    #upper_red = np.array([255,255,180])
-    #mask = cv2.inRange(cimg, lower_red, upper_red)
+    # define range of blue color in HSV
+    lower_blue = np.array([110,50,50])
+    upper_blue = np.array([130,255,255])
+    # Threshold the HSV image to get only blue colors
+    mask = cv2.inRange(cimg, lower_blue, upper_blue)
+
+    # Bitwise-AND mask and original image
+    res = cv2.bitwise_and(img,img, mask= mask)
+
+    # Converting image to greyscale
+    grey = cv2.cvtColor(res,cv2.COLOR_BGR2GRAY)
 
 
-    #res = cv2.bitwise_and(img,img, mask= mask)
     #cv2.imshow('res',res)
+    #cv2.imshow('grey',grey)
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
 
-
-    find_circles(img, cimg, 20, 50, 30, 0, 0)
+    #img = cv2.medianBlur(img,5)
+    #cimg = cv2.cvtColor(img,cv2.COLOR_HSV2BGR)
+    find_circles(grey, res, 20, 50, 30, 20, 150)
 
 
 
